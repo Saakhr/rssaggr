@@ -15,3 +15,15 @@ func handleError(e echo.Context) error {
 func handleHealth(e echo.Context) error {
 	return e.JSON(http.StatusOK, struct{}{})
 }
+func handleAnError(c echo.Context, s string) error {
+	er := errResponsed{
+		Erorr: s,
+	}
+	return c.JSON(http.StatusInternalServerError, er)
+}
+func handleAMessage(c echo.Context, s string, status int) error {
+	er := MsgResponsed{
+		Message: s,
+	}
+	return c.JSON(status, er)
+}
