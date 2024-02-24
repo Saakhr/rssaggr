@@ -45,9 +45,14 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 		return
 	}
 	for _, item := range rssfeed.Channel.Item {
-		published, err := time.Parse(time.RFC1123Z, item.PubDate)
+		var published time.Time
+		if item.PubDate == "" {
+			published, err = parseDateWithFormats(item.Date)
+		} else {
+			published, err = parseDateWithFormats(item.PubDate)
+		}
 		if err != nil {
-			log.Println("Couldn't Parse Date: %v with err: %v", item.PubDate, err)
+			log.Printf(err.Error())
 			continue
 		}
 		_, err = db.CreatePost(context.Background(), database.CreatePostParams{

@@ -18,7 +18,13 @@ func (apiCFG *apiconfig) handleCreatefeed(c echo.Context, user database.User) er
 	param := new(parametres)
 
 	if err := c.Bind(param); err != nil {
-		return err
+		return handleAnError(c, err.Error())
+	}
+	if isWhitespaceOrBlank(param.Name) || isWhitespaceOrBlank(param.Url) {
+		return handleAnError(c, "Fill the input fields")
+	}
+	if !isValidURL(param.Url) {
+		return handleAnError(c, "Malformed url")
 	}
 	feed, err := apiCFG.DB.CreateFeed(c.Request().Context(), database.CreateFeedParams{
 		ID:        uuid.New(),
